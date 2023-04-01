@@ -1,0 +1,4 @@
+- hosts: jenkinsm
+  become: true
+  roles:
+    - jenkins-master

@@ -1,2 +1,12 @@
 ---
-# tasks file for jenkins-master
+- name: Update packages
+  include_tasks: update_packages.yml
+
+- name: Install docker
+  include_tasks: install_docker.yml
+
+- name: Run jenkins as a docker container
+  include_tasks: run_jenkins_container.yml
+
+  
+
