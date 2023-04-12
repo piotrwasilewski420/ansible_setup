@@ -1,4 +1,5 @@
-- hosts: jenkinsm
-  become: true
+- name: Install docker
   roles:
-    - jenkins-master
+    - install-docker
+  tags:
+    - docker
