@@ -1,0 +1,30 @@
+- name: Add PGP key for nginx
+  get_url:
+    url: https://nginx.org/keys/nginx_signing.key
+    dest: /tmp/nginx.pgp
+
+- name: Convert GPG key
+  command: gpg --dearmor --batch --yes --output /etc/apt/trusted.gpg.d/nginx.gpg /tmp/nginx.pgp
+
+- name: Add repository
+  apt_repository:  
+    repo: deb [signed-by=/etc/apt/trusted.gpg.d/nginx.gpg] https://nginx.org/packages/ubuntu/ jammy nginx
+    state: present
+    update_cache: yes
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install nginx
+  apt:
+    name:
+      - nginx
+    update_cache: yes
+
+- name: Enable nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+

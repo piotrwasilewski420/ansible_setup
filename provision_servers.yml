@@ -1,5 +1,40 @@
-- name: Install docker
+---
+- hosts: docker-systems
+  gather_facts: no
+  become: yes
   roles:
     - install-docker
   tags:
     - docker
+
+- hosts: docker-systems
+  gather_facts: no
+  become: yes
+  roles:
+    - install-nginx
+  tags:
+    - nginx
+
+- hosts: jenkinsm
+  gather_facts: no
+  become: yes
+  roles:
+    - run-jenkins-container
+  tags:
+    - jenkins
+
+- hosts: jenkinsm
+  gather_facts: no
+  become: yes
+  roles:
+    - provision-jenkins
+  tags:
+    - provision-jenkins
+
+- hosts: nexus
+  gather_facts: no
+  become: yes
+  roles:
+    - run-nexus-container
+  tags:
+    - nexus

@@ -1,2 +1,4 @@
----
-# tasks file for install-docker
+- name: update repositories
+  include_tasks: update_repositories.yml
+- name: install docker
+  include_tasks: install_docker.yml

@@ -1,0 +1,25 @@
+- name: Delete container if it already exists
+  docker_container:
+    name: nexus
+    state: absent
+
+- name: Run Nexus container
+  docker_container:
+    name: nexus
+    image: klo2k/nexus3
+    state: started
+    published_ports:
+      - 8081:8081
+    env:
+      NEXUS_SECURITY_USER: admin
+      NEXUS_SECURITY_PASSWORD: admin123
+
+- name: Copy nginx config
+  copy:
+    src: ../files/nexus.conf
+    dest: /etc/nginx/conf.d/nexus.conf
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted

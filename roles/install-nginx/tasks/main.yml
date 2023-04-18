@@ -1,0 +1,5 @@
+- name: generate openssl key
+  include_tasks: openssl.yml
+
+- name: install nginx
+  include_tasks: install_nginx.yml

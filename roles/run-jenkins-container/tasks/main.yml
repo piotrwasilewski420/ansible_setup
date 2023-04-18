@@ -1,0 +1,39 @@
+- name: Delete container if it already exists
+  docker_container:
+    name: jenkins
+    state: absent
+
+- name: Install jenkins-sdk
+  pip:
+    name: python-jenkins
+
+- name: Run Jenkins container
+  docker_container:
+    name: jenkins
+    image: jenkins/jenkins:lts
+    state: started
+    restart_policy: always
+    published_ports:
+      - 8080:8080
+      - 50000:50000
+    env:
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false
+
+- name: Copy nginx config
+  copy:
+    src: ../files/jenkins.conf
+    dest: /etc/nginx/conf.d/jenkins.conf
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: Wait for Jenkins to start
+  uri:
+    url: http://jenkinsm.pwasil.pl:8080
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 10
+  delay: 5

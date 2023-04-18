@@ -1,0 +1,7 @@
+- name: Update repositories
+  apt:
+    update_cache: yes
+
+- name: Install docker-sdk
+  pip:
+    name: docker

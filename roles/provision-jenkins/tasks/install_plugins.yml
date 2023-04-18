@@ -1,0 +1,40 @@
+- name: Install plugins in jenkins
+  jenkins_plugin:
+    name: "{{ item }}"
+    state: present
+    url: http://jenkinsm.pwasil.pl:8080
+    with_dependencies: yes
+  loop:
+    - pipeline
+    - github
+    - build-pipeline-plugin
+    - git
+    - ldap
+
+- name: Stop jenkins in container
+  docker_container:
+    name: jenkins
+    state: stopped
+
+- name: Start jenkins in container
+  docker_container:
+    name: jenkins
+    state: started
+
+- name: Wait for jenkins to start
+  uri:
+    url: http://jenkinsm.pwasil.pl:8080
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 10
+  delay: 5
+
+- name: Create admin user
+  jenkins_user:
+    name: admin
+    password: admin
+    url: http://jenkinsm.pwasil.pl:8080
+    state: present
+
+- name: Job for building gradle project

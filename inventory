@@ -1,3 +1,6 @@
-jenkinss
-jenkinsm
+[docker-systems]
 nexus
+jenkinsm
+
+[slave-systems]
+jenkinss
