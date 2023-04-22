@@ -1,3 +1,6 @@
 ---
 - name: Install plugins
   include_tasks: install_plugins.yml
+
+- name: Add slave
+  include_tasks: add_slave.yml

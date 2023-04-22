@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slave>
+  <name>worker-node</name>
+  <description></description>
+  <remoteFS>/home/slave/jenkins</remoteFS>
+  <numExecutors>1</numExecutors>
+  <mode>NORMAL</mode>
+  <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
+  <launcher class="hudson.plugins.sshslaves.SSHLauncher" plugin="ssh-slaves@2.877.v365f5eb_a_b_eec">
+    <host>klebiedzinski.pl</host>
+    <port>22</port>
+    <credentialsId>22db90a1-4727-4443-96cd-33978ba94b0e</credentialsId>
+    <launchTimeoutSeconds>60</launchTimeoutSeconds>
+    <maxNumRetries>10</maxNumRetries>
+    <retryWaitTime>15</retryWaitTime>
+    <sshHostKeyVerificationStrategy class="hudson.plugins.sshslaves.verifiers.NonVerifyingKeyVerificationStrategy"/>
+    <tcpNoDelay>true</tcpNoDelay>
+  </launcher>
+  <label></label>
+  <nodeProperties/>
+</slave>

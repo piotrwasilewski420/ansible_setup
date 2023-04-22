@@ -10,6 +10,12 @@
     - build-pipeline-plugin
     - git
     - ldap
+    - ssh-agent
+    - ssh-slaves
+    - gradle
+    - pipeline-model-definition
+    - jclouds-jenkins
+    - pipeline-stage-view
 
 - name: Stop jenkins in container
   docker_container:
@@ -30,11 +36,16 @@
   retries: 10
   delay: 5
 
-- name: Create admin user
-  jenkins_user:
-    name: admin
-    password: admin
-    url: http://jenkinsm.pwasil.pl:8080
-    state: present
-
 - name: Job for building gradle project
+  jenkins_job:
+    name: build-gradle-project
+    config: "{{ lookup('file', 'config.xml') }}"
+    state: present
+    url: http://jenkinsm.pwasil.pl:8080
+
+- name: Job for building maven project
+  jenkins_job:
+    name: build-maven-project
+    config: "{{ lookup('file', 'config.xml') }}"
+    state: present
+    url: http://jenkinsm.pwasil.pl:8080

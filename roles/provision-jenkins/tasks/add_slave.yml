@@ -1,0 +1,17 @@
+- name: Download jenkins-cli.jar
+  get_url:
+    url: http://jenkinsm.pwasil.pl:8080/jnlpJars/jenkins-cli.jar
+    dest: /home/ubuntu/jenkins-cli.jar
+    mode: 0755
+
+- name: Add credentials to jenkins
+  shell:
+    cmd: java -jar jenkins-cli.jar -s http://jenkinsm.pwasil.pl:8080/ -webSocket import-credentials-as-xml system::system::jenkins
+    stdin: "{{ lookup('file', 'credentials.xml') }}"
+
+- name: Add worker node
+  shell:
+    cmd: java -jar jenkins-cli.jar -s http://jenkinsm.pwasil.pl:8080/ create-node worker-node
+    stdin: "{{ lookup('file', 'worker-node.xml') }}"
+
+
