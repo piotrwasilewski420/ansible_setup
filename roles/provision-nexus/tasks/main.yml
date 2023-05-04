@@ -1,15 +1,4 @@
-- name: create nexus proxy for maven
-  uri:
-    url: https://nexus.pwasil.pl/service/rest/v1/script
-    method: POST
-    body: '{"name":"maven-proxy","type":"groovy","content":"repository.createMavenHosted(\\"maven-proxy\\")"}'
-    body_format: json
-    user: admin
-    password: admin123
-    status_code: 201
-    force_basic_auth: yes
-    validate_certs: no
-  register: nexus_proxy
-  until: nexus_proxy.status == 201
-  retries: 10
-  delay: 10
+- name: Run script initializing repos from file init.sh
+  shell: "{{ lookup('file', '../files/init.sh') }}"
+  
+  

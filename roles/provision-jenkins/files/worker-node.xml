@@ -9,7 +9,7 @@
   <launcher class="hudson.plugins.sshslaves.SSHLauncher" plugin="ssh-slaves@2.877.v365f5eb_a_b_eec">
     <host>klebiedzinski.pl</host>
     <port>22</port>
-    <credentialsId>22db90a1-4727-4443-96cd-33978ba94b0e</credentialsId>
+    <credentialsId>slave-credentials</credentialsId>
     <launchTimeoutSeconds>60</launchTimeoutSeconds>
     <maxNumRetries>10</maxNumRetries>
     <retryWaitTime>15</retryWaitTime>

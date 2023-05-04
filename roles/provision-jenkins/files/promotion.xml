@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@1289.vd1c337fd5354">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2125.vddb_a_44a_d605e"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2125.vddb_a_44a_d605e">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3659.v582dc37621d8">
+    <script>pipeline {
+    agent {
+        label &apos;worker-node&apos;
+    }
+    environment {
+        ARTIFACT_ID = &apos;spring-petclinic&apos;
+        GROUP_ID = &apos;pl.pwasil&apos;
+        VERSION = &apos;11&apos;
+        DEBUG = &apos;true&apos;
+        PROMOTER_CLASS = &apos;org.jenkinsci.plugins.artifactpromotion.NexusOSSPromotor&apos;
+        STAGING_REPO_URL = &apos;https://nexus.pwasil.pl/repository/maven-snapshots-custom/&apos;
+        STAGING_USER = &apos;admin&apos;
+        STAGING_PW = &apos;admin123&apos;
+        RELEASE_REPO_URL = &apos;https://nexus.pwasil.pl/repository/maven-releases-custom/&apos;
+        RELEASE_USER = &apos;admin&apos;
+        RELEASE_PW = &apos;admin123&apos;
+        DOCKERHUB_REGISTRY = &apos;https://index.docker.io/v1/&apos;
+        DOCKERHUB_CREDENTIALS_ID = &apos;dockerhub-credentials&apos;
+    }
+    stages {
+        stage(&apos;Promote artifact&apos;) {
+            steps {
+                script {
+                    def promotion = [:]
+                    promotion[&apos;artifactId&apos;] = ARTIFACT_ID
+                    promotion[&apos;classifier&apos;] = &apos;&apos;
+                    promotion[&apos;debug&apos;] = DEBUG
+                    promotion[&apos;groupId&apos;] = GROUP_ID
+                    promotion[&apos;promoterClass&apos;] = PROMOTER_CLASS
+                    promotion[&apos;releasePW&apos;] = RELEASE_PW
+                    promotion[&apos;releaseRepository&apos;] = RELEASE_REPO_URL
+                    promotion[&apos;releaseUser&apos;] = RELEASE_USER
+                    promotion[&apos;stagingPW&apos;] = STAGING_PW
+                    promotion[&apos;stagingRepository&apos;] = STAGING_REPO_URL
+                    promotion[&apos;stagingUser&apos;] = STAGING_USER
+                    promotion[&apos;version&apos;] = VERSION
+                    artifactPromotion(promotion)
+                }
+            }
+        }
+    stage(&apos;Build docker image from artifact&apos;) {
+        steps {
+            sh &apos;curl https://nexus.pwasil.pl/repository/maven-releases-custom/pl/pwasil/spring-petclinic/${VERSION}/spring-petclinic-${VERSION}.jar --output spring.jar&apos;
+        }
+    }
+    stage(&apos;Build and push docker image based on this image&apos;) {
+            steps {
+                script {
+                    docker.withRegistry(env.DOCKERHUB_REGISTRY, env.DOCKERHUB_CREDENTIALS_ID) {
+                        def imageTag = &quot;piotrwasilewski420/petclinic-releases:latest&quot;
+                        def dockerfileUrl = &quot;https://raw.githubusercontent.com/piotrwasilewski420/infra-devops/main/Dockerfile&quot;
+                        def dockerfileContent = sh(script: &quot;curl -s ${dockerfileUrl}&quot;, returnStdout: true)
+                        def context = &apos;.&apos;
+                        writeFile file: &apos;dockerfile&apos;, text: dockerfileContent
+                        def image = docker.build(imageTag, &quot;-f dockerfile ${context}&quot;)
+                        image.push()
+                    }
+                }
+            }
+        }
+    }
+}
+</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

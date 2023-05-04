@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@1289.vd1c337fd5354">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2125.vddb_a_44a_d605e"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2125.vddb_a_44a_d605e">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+      <options>
+        <string>skipDefaultCheckout</string>
+      </options>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description>- watch for changes being pushed to review to any branch;&#xd;
+&#xd;
+- build project with Maven, including unit tests (if any); this imitates linter work;&#xd;
+&#xd;
+- should NOT upload artifacts to Nexus.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.37.0">
+      <projectUrl>https://github.com/piotrwasilewski420/devops_intern_project/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers>
+        <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.37.0">
+          <spec></spec>
+        </com.cloudbees.jenkins.GitHubPushTrigger>
+      </triggers>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3659.v582dc37621d8">
+    <script>pipeline {
+    agent { label &apos;worker-node&apos; }
+    options {
+        skipDefaultCheckout()
+    }
+    
+    stages {
+        stage(&apos;Checkout&apos;) {
+            steps {
+                checkout scmGit(branches: [[name: &apos;*/*&apos;]], extensions: [], userRemoteConfigs: [[url: &apos;https://github.com/piotrwasilewski420/devops_intern_project.git&apos;]])
+            }
+        }
+        stage(&apos;Build&apos;) {
+            steps {
+                sh &apos;./gradlew clean build&apos;
+            }
+        }
+        stage(&apos;Unit Tests&apos;) {
+            steps {
+                sh &apos;./gradlew test&apos;
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo &apos;PreCommit job completed successfully!&apos;
+        }
+        failure {
+            echo &apos;PreCommit job failed!&apos;
+        }
+    }
+}
+</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

@@ -3,16 +3,16 @@
     name: nexus
     state: absent
 
-- name: Run Nexus container
+- name: Run nexus container
   docker_container:
     name: nexus
     image: klo2k/nexus3
     state: started
+    restart_policy: always
+    env:
+      NEXUS_SECURITY_RANDOMPASSWORD: "false"
     published_ports:
       - 8081:8081
-    env:
-      NEXUS_SECURITY_USER: admin
-      NEXUS_SECURITY_PASSWORD: admin123
 
 - name: Copy nginx config
   copy:
@@ -23,3 +23,14 @@
   service:
     name: nginx
     state: restarted
+
+- name: Wait for nexus to start
+  uri:
+    url: http://localhost:8081
+    return_content: yes
+    status_code: 200
+    timeout: 5
+  register: nexus_started
+  until: nexus_started.status == 200
+  retries: 10
+  delay: 5

@@ -15,6 +15,22 @@
   tags:
     - nginx
 
+- hosts: nexus
+  gather_facts: no
+  become: yes
+  roles:
+    - run-nexus-container
+  tags:
+    - nexus
+
+- hosts: nexus
+  gather_facts: no
+  become: yes
+  roles:
+    - provision-nexus
+  tags:
+    - provision-nexus
+
 - hosts: jenkinsm
   gather_facts: no
   become: yes
@@ -31,10 +47,3 @@
   tags:
     - provision-jenkins
 
-- hosts: nexus
-  gather_facts: no
-  become: yes
-  roles:
-    - run-nexus-container
-  tags:
-    - nexus

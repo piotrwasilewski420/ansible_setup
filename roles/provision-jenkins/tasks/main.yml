@@ -4,3 +4,7 @@
 
 - name: Add slave
   include_tasks: add_slave.yml
+
+- name: Add jobs
+  include_tasks: add_jobs.yml
+

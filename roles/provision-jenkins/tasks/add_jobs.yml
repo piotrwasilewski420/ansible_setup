@@ -1,0 +1,35 @@
+- name: Add PreCommit job
+  jenkins_job:
+    config: "{{ lookup('file', '../files/pre-commit.xml') }}"
+    name: PreCommit
+    url: http://jenkinsm.pwasil.pl:8080
+    state: present
+
+- name: Add Build job
+  jenkins_job:
+    config: "{{ lookup('file', '../files/build.xml') }}"
+    name: Build
+    url: http://jenkinsm.pwasil.pl:8080
+    state: present
+
+- name: Add Promotion job
+  jenkins_job:
+    config: "{{ lookup('file', '../files/promotion.xml') }}"
+    name: Promotion
+    url: http://jenkinsm.pwasil.pl:8080
+    state: present
+
+- name: Add Deploy job
+  jenkins_job:
+    config: "{{ lookup('file', '../files/deploy.xml') }}"
+    name: Deploy
+    url: http://jenkinsm.pwasil.pl:8080
+    state: present
+
+- name: Start PreCommit job
+  shell:
+    cmd: java -jar jenkins-cli.jar -s http://jenkinsm.pwasil.pl:8080/ build PreCommit
+
+- name: Start Build job
+  shell:
+    cmd: java -jar jenkins-cli.jar -s http://jenkinsm.pwasil.pl:8080/ build Build

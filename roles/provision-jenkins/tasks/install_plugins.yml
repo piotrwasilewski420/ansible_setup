@@ -16,6 +16,9 @@
     - pipeline-model-definition
     - jclouds-jenkins
     - pipeline-stage-view
+    - nexus-artifact-uploader
+    - artifact-promotion
+    - docker-workflow
 
 - name: Stop jenkins in container
   docker_container:
@@ -36,16 +39,3 @@
   retries: 10
   delay: 5
 
-- name: Job for building gradle project
-  jenkins_job:
-    name: build-gradle-project
-    config: "{{ lookup('file', 'config.xml') }}"
-    state: present
-    url: http://jenkinsm.pwasil.pl:8080
-
-- name: Job for building maven project
-  jenkins_job:
-    name: build-maven-project
-    config: "{{ lookup('file', 'config.xml') }}"
-    state: present
-    url: http://jenkinsm.pwasil.pl:8080
